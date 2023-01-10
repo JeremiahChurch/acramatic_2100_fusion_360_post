@@ -1,2 +1,15 @@
-# acramatic_2100_fusion_360_post
-Acramatic 2100 Post processor for Fusion 360 probing and misc added
+# Acramatic 2100 Fusion360 Post Processor
+
+Extension and refinement of the standard autodesk/vickers provided post processor.
+
+Probing extended via fanuc post processor
+
+TODO:
+
+- [ ] probing tested
+- [ ] rotary 4th
+
+### WORK IN PROGRESS
+
+## Resources / References
+
