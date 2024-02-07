@@ -63,3 +63,32 @@ TODO:
 | [$SIZE_ERROR]   | True position value plus tool offset                                                                                                                                                                                | X, Y, Z                   |                     |
 | [$TOL_EXCEEDED] | Measured size error exceeds U word value                                                                                                                                                                            |                           | 0 = false, true = 1 |
 | [$TOOL_PRB_LOC] | Measured Tool Probe Location                                                                                                                                                                                        | X, Y                      | 0 - 99999mm         |
+
+
+
+### install
+
+1. install visual studio & git
+2. install fusion 360 post processor editor - https://marketplace.visualstudio.com/items?itemName=Autodesk.hsm-post-processor
+3. find posts to use as examples (some are located in this repo already) - https://cam.autodesk.com/hsmposts
+4. in visual studio open a project (This one as an example)
+
+### run / build / test
+
+1. run (f1) > hsm change post executable - C:\Users\username\AppData\Local\Autodesk\webdeploy\production\(id)\Applications\CAM360\post.exe
+the ID can change on updates!
+my example is C:\Users\jerem\appdata\local\Autodesk\webdeploy\production\b0c303e70bd97cfdc195adab65922cfeffcb363a\Applications\CAM360\post.exe
+page 51 section 2-43 in the detail guide below
+
+2. open your CPS file post processor
+3. cnc selector -> pick a file (probably milling) or use custom (below)
+
+generate a custom CNC intermediate file by using the visual studio post processor. open the NC file on save and it will point to a DIFFERENT folder with the intermediate file in it.
+
+use that in the cnc selector section of the visual studio plugin - 'custom' section (right click -> import cnc)
+
+
+
+
+detail guide
+https://cam.autodesk.com/posts/posts/guides/Post%20Processor%20Training%20Guide.pdf
