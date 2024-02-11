@@ -108,14 +108,6 @@ properties = {
     ],
     value: "M26",
     scope: "post"
-  },
-  singleLineProbing: {
-    title      : "Single line probing",
-    description: "If enabled, probing will be output in a single cycle call line.",
-    group      : "probing",
-    type       : "boolean",
-    value      : false,
-    scope      : "post"
   }
 };
 
