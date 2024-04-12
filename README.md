@@ -2,7 +2,7 @@
 
 Extension and refinement of the standard autodesk/vickers provided post-processor.
 
-Probing extended via fanuc post-processor as a start see #1
+Probing extended via fanuc post-processor as a start see [#1](https://github.com/JeremiahChurch/acramatic_2100_fusion_360_post/pull/1)
 
 TODO:
 
