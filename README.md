@@ -1,17 +1,21 @@
 # Acramatic 2100 Fusion360 Post Processor
 
-Extension and refinement of the standard autodesk/vickers provided post processor.
+Extension and refinement of the standard autodesk/vickers provided post-processor.
 
-Probing extended via fanuc post processor
+Probing extended via fanuc post-processor as a start see #1
 
 TODO:
 
 - [ ] probing tested
-- [ ] rotary 4th
+- [ ] rotary 4th - start [here](https://forums.autodesk.com/t5/fusion-manufacture/acramatic-2100-4th/td-p/11746662)
 
 ### WORK IN PROGRESS
 
 ## Resources / References
+
+PDFs etc related to cinci/a2100 [here](https://tongboy.com/files/cinci/) please message me if you have any additional
+
+[CNCZone forum](https://www.cnczone.com/forums/cincinnati-cnc/) is full of excellent help for these. gwood is the GOAT
 
 ### Probing G-code
 * G75 internal corner
