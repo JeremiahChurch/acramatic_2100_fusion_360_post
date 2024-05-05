@@ -318,13 +318,13 @@ function protectedProbeMove(_cycle, x, y, z) {
   var _y = yOutput.format(y);
   var _z = zOutput.format(z);
   if (_z && z >= getCurrentPosition().z) {
-    writeBlock("PROBE_P" + 9810, _z, getFeed(cycle.feedrate)); // protected positioning move
+    writeBlock("G01", _z, getFeed(cycle.feedrate)); // protected positioning move
   }
   if (_x || _y) {
-    writeBlock("PROBE_P" + 9810, _x, _y, getFeed(highFeedrate)); // protected positioning move
+    writeBlock("G01", _x, _y, getFeed(highFeedrate)); // protected positioning move
   }
   if (_z && z < getCurrentPosition().z) {
-    writeBlock( "PROBE_P" + 9810, _z, getFeed(cycle.feedrate)); // protected positioning move
+    writeBlock( "G01", _z, getFeed(cycle.feedrate)); // protected positioning move
   }
 }
 
