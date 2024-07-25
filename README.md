@@ -1,15 +1,16 @@
 # Acramatic 2100 Fusion360 Post Processor
 
-Extension and refinement of the standard autodesk/vickers provided post-processor.
+Rework of the existing vickers/autodesk provided post-processor. Vickers - you can absolutely use this instead of yours :D
 
-Probing extended via fanuc post-processor as a start see [#1](https://github.com/JeremiahChurch/acramatic_2100_fusion_360_post/pull/1)
+Added support for spindle probing, tool probing and rotary 4th A axis.
 
 TODO:
 
-- [ ] probing tested
-- [ ] rotary 4th - start [here](https://forums.autodesk.com/t5/fusion-manufacture/acramatic-2100-4th/td-p/11746662)
-
-### WORK IN PROGRESS
+- [ ] G51 vector probe for WCS [G51 doesn't set coordinates](https://www.cnczone.com/forums/cincinnati-cnc/471344-use-g51-vector-probe-update-offsets.html) (release 2 limit/bug?)
+- [ ] Refactor WCS probing to start with incremental movement (G91) instead of fixed (G90)
+- [ ] improve tool probing speed by lowering spindle near tool probe in Z at rapid rather than rapid X/Y to probe location and Z feed down at probe speed.
+- [ ] improve tool probing to use correct P word for tool type
+- [ ] support more work offsets
 
 ## Resources / References
 
