@@ -9,8 +9,9 @@ TODO:
 - [ ] G51 vector probe for WCS [G51 doesn't set coordinates](https://www.cnczone.com/forums/cincinnati-cnc/471344-use-g51-vector-probe-update-offsets.html) (release 2 limit/bug?)
 - [ ] Refactor WCS probing to start with incremental movement (G91) instead of fixed (G90)
 - [ ] improve tool probing speed by lowering spindle near tool probe in Z at rapid rather than rapid X/Y to probe location and Z feed down at probe speed.
-- [ ] improve tool probing to use correct P word for tool type
+- [ ] improve tool probing to use correct P word for tool type automatically
 - [ ] support more work offsets
+- [ ] move work to front of machine at program completion.
 
 ## Resources / References
 
