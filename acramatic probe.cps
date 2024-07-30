@@ -16,8 +16,9 @@
 // REV004 -16/07/2024  ; TBC Modifications
 // REV005 -19/07/2024  ; Probing Updates
 // REV006 -22/07/2024  ; Probing Updates
+// REV007 -30/07/2024  ; Rotary Issue modifications
 //---------------------------------------------------------------------------//
-description = "Acramatic Probe V06";
+description = "Acramatic Probe V07";
 vendor = "Vickers";
 vendorUrl = "https://github.com/JeremiahChurch/acramatic_2100_fusion_360_post";
 legal = "Copyright (C) 2012-2022 by Autodesk, Inc.";
@@ -844,7 +845,7 @@ function forceWorkPlane() {
 
 function defineWorkPlane(_section, _setWorkPlane) {
   var abc = new Vector(0, 0, 0);
-  if (abc.x != 0){
+  //if (abc.x != 0){
   if (forceMultiAxisIndexing || !is3D() || machineConfiguration.isMultiAxisConfiguration()) { // use 5-axis indexing for multi-axis mode
     // set working plane after datum shift
 
@@ -887,7 +888,7 @@ function defineWorkPlane(_section, _setWorkPlane) {
   }
   return abc;
 }
-}
+//}
 
 function cancelWorkPlane(force) {
   if (force) {
@@ -909,7 +910,7 @@ function setWorkPlane(abc) {
     return; // no change
   }
 
-  onCommand(COMMAND_UNLOCK_MULTI_AXIS);
+ // onCommand(COMMAND_UNLOCK_MULTI_AXIS);
   if (!retracted) {
      writeRetract(Z);
   }
@@ -947,7 +948,7 @@ function setWorkPlane(abc) {
     );
   }
 
-  onCommand(COMMAND_LOCK_MULTI_AXIS);
+  //onCommand(COMMAND_LOCK_MULTI_AXIS);
 
   currentWorkPlaneABC = abc;
 }
@@ -2878,16 +2879,16 @@ function onCommand(command) {
       onCommand(tool.clockwise ? COMMAND_SPINDLE_CLOCKWISE : COMMAND_SPINDLE_COUNTERCLOCKWISE);
       return;
     case COMMAND_LOCK_MULTI_AXIS:
-      writeBlock(mFormat.format(11));
-      writeBlock(mFormat.format(51));
+      writeBlock(mFormat.format(10));
       return;
     case COMMAND_UNLOCK_MULTI_AXIS:
-      writeBlock(mFormat.format(10));
-      writeBlock(mFormat.format(50));
+      writeBlock(mFormat.format(11));
       return;
     case COMMAND_START_CHIP_TRANSPORT:
+      // writeBlock(mFormat.format(91));
       return;
     case COMMAND_STOP_CHIP_TRANSPORT:
+      // writeBlock(mFormat.format(92));
       return;
     case COMMAND_BREAK_CONTROL:
       if (getProperty("UseToolBreakage") != 'NO') {
