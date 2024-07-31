@@ -1758,7 +1758,7 @@ function onCyclePoint(x, y, z) {
         writeBlock(
           gFeedModeModal.format(95), // use pitch
           gAbsIncModal.format(90),
-          gCycleModal.format((tool.type == TOOL_TAP_LEFT_HAND) ? 74 : 84),
+          gCycleModal.format((tool.type == TOOL_TAP_LEFT_HAND) ? 74 : 84.1), // FIXME: hardcoded to rigid tapping use useRidged options instead? also left hand is wrong
           getCommonCycle(x, y, cycle.bottom - cycle.retract, cycle.retract, cycle.clearance),
           "P" + milliFormat.format(P),
           feedOutput.format(F)
