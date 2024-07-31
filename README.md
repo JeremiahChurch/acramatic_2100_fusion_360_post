@@ -12,6 +12,7 @@ TODO:
 - [ ] improve tool probing to use correct P word for tool type automatically
 - [ ] support more work offsets
 - [ ] move work to front of machine at program completion.
+- [ ] fix left hand tapping operation - currently incorrectly set to `74`
 
 ## Resources / References
 
