@@ -1873,7 +1873,7 @@ function onCyclePoint(x, y, z) {
           gFormat.format(77),
           "X" + xyzFormat.format(x + approach(cycle.approach1) * (cycle.probeClearance + tool.diameter / 2)),
           //"Q" + xyzFormat.format(cycle.probeOvertravel),
-          getProbingArguments(cycle, true)
+          getProbingArguments(cycle, true),
           "I" + xyzFormat.format(cycle.width1)
         );
         break;
@@ -1883,7 +1883,7 @@ function onCyclePoint(x, y, z) {
           gFormat.format(77),
           "Y" + xyzFormat.format(y + approach(cycle.approach1) * (cycle.probeClearance + tool.diameter / 2)),
           //"Q" + xyzFormat.format(cycle.probeOvertravel),
-          getProbingArguments(cycle, true)
+          getProbingArguments(cycle, true),
           "J" + xyzFormat.format(cycle.width1)
         );
         break;
