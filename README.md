@@ -13,6 +13,7 @@ TODO:
 - [ ] support more work offsets
 - [ ] move work to front of machine at program completion.
 - [ ] fix left hand tapping operation - currently incorrectly set to `74`
+- [ ] remove hardcode ridgid tapping and use post processor option to support both tap types
 
 ## Resources / References
 
