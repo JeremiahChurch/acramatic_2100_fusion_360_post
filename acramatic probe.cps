@@ -26,7 +26,7 @@ legal = "Copyright (C) 2012-2022 by Autodesk, Inc.";
 certificationLevel = 2;
 minimumRevision = 45702;
 
-longDescription = "Acramatic 2100e post illustrating inverse time feHed with an A-axis.";
+longDescription = "Acramatic 2100 post illustrating inverse time feHed with an A-axis.";
 
 extension = "nc";
 programNameIsInteger = false;
