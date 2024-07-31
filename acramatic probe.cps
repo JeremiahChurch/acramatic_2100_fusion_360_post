@@ -2,7 +2,7 @@
   Copyright (C) 2012-2022 by Autodesk, Inc.
   All rights reserved.
 
-  FANUC post processor configuration.
+  Acramatic post-processor configuration.
 
   $Revision: 43964 89925c80df939b71c9800358efebb7d97de3ee3b $
   $Date: 2022-09-21 13:57:49 $
@@ -17,15 +17,16 @@
 // REV005 -19/07/2024  ; Probing Updates
 // REV006 -22/07/2024  ; Probing Updates
 // REV007 -30/07/2024  ; Rotary Issue modifications
+// REV008 -30/07/2024  ; probing updates
 //---------------------------------------------------------------------------//
-description = "Acramatic Probe V07";
+description = "Acramatic Probe V08";
 vendor = "Vickers";
 vendorUrl = "https://github.com/JeremiahChurch/acramatic_2100_fusion_360_post";
 legal = "Copyright (C) 2012-2022 by Autodesk, Inc.";
 certificationLevel = 2;
 minimumRevision = 45702;
 
-longDescription = "Generic Fanuc post illustrating inverse time feHed with an A-axis.";
+longDescription = "Acramatic 2100e post illustrating inverse time feHed with an A-axis.";
 
 extension = "nc";
 programNameIsInteger = false;
@@ -1869,19 +1870,21 @@ function onCyclePoint(x, y, z) {
       case "probing-x":
         protectedProbeMove(cycle, x, y, z - cycle.depth);
         writeBlock(
-          mFormat.format(165), "P" + 9811,
+          gFormat.format(77),
           "X" + xyzFormat.format(x + approach(cycle.approach1) * (cycle.probeClearance + tool.diameter / 2)),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          //"Q" + xyzFormat.format(cycle.probeOvertravel),
           getProbingArguments(cycle, true)
+          "I" + xyzFormat.format(cycle.width1)
         );
         break;
       case "probing-y":
         protectedProbeMove(cycle, x, y, z - cycle.depth);
         writeBlock(
-          mFormat.format(165), "P" + 9811,
+          gFormat.format(77),
           "Y" + xyzFormat.format(y + approach(cycle.approach1) * (cycle.probeClearance + tool.diameter / 2)),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          //"Q" + xyzFormat.format(cycle.probeOvertravel),
           getProbingArguments(cycle, true)
+          "J" + xyzFormat.format(cycle.width1)
         );
         break;
       case "probing-z":
