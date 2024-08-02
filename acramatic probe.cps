@@ -10,16 +10,17 @@
   FORKID {CB457AE9-77B4-4F88-B95A-4DC6980DBE3D}
 */
 //----------------------------REVISION HISTORY-------------------------------//
-// REV001- 24/05/2024  ; Modifications from Similar Pp
-// REV002 -09/06/2024  ; Updates arc , G49 removed
-// REV003 -04/07/2024  ; TBC Added
-// REV004 -16/07/2024  ; TBC Modifications
-// REV005 -19/07/2024  ; Probing Updates
-// REV006 -22/07/2024  ; Probing Updates
-// REV007 -30/07/2024  ; Rotary Issue modifications
-// REV008 -30/07/2024  ; probing updates
+// REV01- 24/05/2024  ; Modifications from Similar Pp
+// REV02 -09/06/2024  ; Updates arc , G49 removed
+// REV03 -04/07/2024  ; TBC Added
+// REV04 -16/07/2024  ; TBC Modifications
+// REV05 -19/07/2024  ; Probing Updates
+// REV06 -22/07/2024  ; Probing Updates
+// REV07 -30/07/2024  ; Rotary Issue modifications
+// REV08 -30/07/2024  ; probing updates
+// REV09 -08/01/2024  ; tapping fixes
 //---------------------------------------------------------------------------//
-description = "Acramatic Probe V08";
+description = "Acramatic Probe V09";
 vendor = "Vickers";
 vendorUrl = "https://github.com/JeremiahChurch/acramatic_2100_fusion_360_post";
 legal = "Copyright (C) 2012-2022 by Autodesk, Inc.";
@@ -1425,7 +1426,7 @@ function onSection() {
       error(localize("Spindle speed out of range."));
       return;
     }
-    if (spindleSpeed > 99999) {
+    if (spindleSpeed > 10000) {
       warning(localize("Spindle speed exceeds maximum value."));
     }
     var tapping = hasParameter("operation:cycleType") &&
@@ -1755,9 +1756,9 @@ function onCyclePoint(x, y, z) {
         break;
       case "tapping":
         gFeedModeModal.reset();
+        // gFeedModeModal.format(95) // use pitch
         writeBlock(
-          //gFeedModeModal.format(95), // use pitch
-          gCycleModal.format(84.1), // FIXME: hardcoded to rigid tapping use useRidged options instead? also left hand might be wrong
+          gCycleModal.format(84.1), // FIXME: hardcoded to rigid tapping use useRidged options instead?
           gAbsIncModal.format(90),
           getCommonCycle(x, y, cycle.bottom - cycle.retract, cycle.retract, cycle.clearance),
           "P" + milliFormat.format(P),
@@ -1767,9 +1768,9 @@ function onCyclePoint(x, y, z) {
       case "left-tapping":
         gFeedModeModal.reset();
         writeBlock(
-          gFeedModeModal.format(95), // use pitch
+          // gFeedModeModal.format(95), // use pitch
           gAbsIncModal.format(90),
-          gCycleModal.format(74),
+          gCycleModal.format(84.1),
           getCommonCycle(x, y, cycle.bottom - cycle.retract, cycle.retract, cycle.clearance),
           "P" + milliFormat.format(P),
           feedOutput.format(F)
@@ -1778,9 +1779,9 @@ function onCyclePoint(x, y, z) {
       case "right-tapping":
         gFeedModeModal.reset();
         writeBlock(
-          gFeedModeModal.format(95), // use pitch
+          // gFeedModeModal.format(95), // use pitch
           gAbsIncModal.format(90),
-          gCycleModal.format(84),
+          gCycleModal.format(84.1),
           getCommonCycle(x, y, cycle.bottom - cycle.retract, cycle.retract, cycle.clearance),
           "P" + milliFormat.format(P),
           "F" + xyzFormat.format(tool.threadPitch)
@@ -3131,10 +3132,12 @@ function onClose() {
   }
   onImpliedCommand(COMMAND_END);
   onImpliedCommand(COMMAND_STOP_SPINDLE);
-  //writeBlock(mFormat.format(26)); // Part Counter,
-    writeRetract(Z);
-  writeBlock('G0 X0.0 Y0.0')
-  writeBlock(mFormat.format(30)); // stop program, spindle stop, coolant off
+  writeBlock(mFormat.format(83)); // Part Counter,
+  writeRetract(Z);
+  writeBlock(gAbsIncModal.format(98)) // machine coords
+  writeBlock('G0 X19.5 Y19.4') // put part out front on sabre 1000
+  writeBlock(gAbsIncModal.format(90))
+  writeBlock(mFormat.format(30)); // stop program, spindle stop, coolant off, tool put away
   if (subprograms.length > 0) {
     writeln("");
     write(subprograms);
