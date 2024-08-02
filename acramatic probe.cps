@@ -3133,9 +3133,9 @@ function onClose() {
   onImpliedCommand(COMMAND_END);
   onImpliedCommand(COMMAND_STOP_SPINDLE);
   writeBlock(mFormat.format(83)); // Part Counter,
+  writeBlock('M6T0') // put tool away
   writeRetract(Z);
-  // writeBlock(gAbsIncModal.format(98)) // machine coords
-  // writeBlock('G0 X19.5 Y19.4') // put part out front on sabre 1000
+  writeBlock('G98 G0 X19.5 Y19.4') // put part out front on sabre 1000 in machine coords
   writeBlock(gAbsIncModal.format(90))
   writeBlock(mFormat.format(30)); // stop program, spindle stop, coolant off, tool put away
   if (subprograms.length > 0) {
