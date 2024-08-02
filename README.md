@@ -11,9 +11,7 @@ TODO:
 - [ ] fix probing-x & probing-y surface math from WCS to be correct
 - [ ] improve tool probing to use correct P word for tool type automatically
 - [ ] support more work offsets
-- [ ] move work to front of machine at program completion.
-- [ ] fix left hand tapping operation - currently incorrectly set to `74`
-- [ ] remove hardcode ridgid tapping and use post processor option to support both tap types
+- [ ] remove hardcode rigid tapping and use post processor option to support both tap types
 
 ## Resources / References
 
