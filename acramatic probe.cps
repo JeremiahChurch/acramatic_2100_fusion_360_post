@@ -1756,30 +1756,30 @@ function onCyclePoint(x, y, z) {
         break;
       case "tapping":
         gFeedModeModal.reset();
-        // gFeedModeModal.format(95) // use pitch
         writeBlock(
+          gFeedModeModal.format(95), // use pitch
           gCycleModal.format(84.1), // FIXME: hardcoded to rigid tapping use useRidged options instead?
           gAbsIncModal.format(90),
           getCommonCycle(x, y, cycle.bottom - cycle.retract, cycle.retract, cycle.clearance),
           "P" + milliFormat.format(P),
-          feedOutput.format(F)
+          "F" + xyzFormat.format(tool.threadPitch)
         );
         break;
       case "left-tapping":
         gFeedModeModal.reset();
         writeBlock(
-          // gFeedModeModal.format(95), // use pitch
+          gFeedModeModal.format(95), // use pitch
           gAbsIncModal.format(90),
           gCycleModal.format(84.1),
           getCommonCycle(x, y, cycle.bottom - cycle.retract, cycle.retract, cycle.clearance),
           "P" + milliFormat.format(P),
-          feedOutput.format(F)
+          "F" + xyzFormat.format(tool.threadPitch)
         );
         break;
       case "right-tapping":
         gFeedModeModal.reset();
         writeBlock(
-          // gFeedModeModal.format(95), // use pitch
+          gFeedModeModal.format(95), // use pitch
           gAbsIncModal.format(90),
           gCycleModal.format(84.1),
           getCommonCycle(x, y, cycle.bottom - cycle.retract, cycle.retract, cycle.clearance),
@@ -3134,8 +3134,8 @@ function onClose() {
   onImpliedCommand(COMMAND_STOP_SPINDLE);
   writeBlock(mFormat.format(83)); // Part Counter,
   writeRetract(Z);
-  writeBlock(gAbsIncModal.format(98)) // machine coords
-  writeBlock('G0 X19.5 Y19.4') // put part out front on sabre 1000
+  // writeBlock(gAbsIncModal.format(98)) // machine coords
+  // writeBlock('G0 X19.5 Y19.4') // put part out front on sabre 1000
   writeBlock(gAbsIncModal.format(90))
   writeBlock(mFormat.format(30)); // stop program, spindle stop, coolant off, tool put away
   if (subprograms.length > 0) {
