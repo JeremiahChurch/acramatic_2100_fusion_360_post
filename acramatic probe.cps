@@ -20,8 +20,9 @@
 // REV08 -30/07/2024  ; probing updates
 // REV09 -08/01/2024  ; tapping fixes
 // REV10 -08/05/2024  ; support multiple WCS
+// REV11 -08/05/2024  ; chip breaking for tapping
 //---------------------------------------------------------------------------//
-description = "Acramatic Probe V10";
+description = "Acramatic Probe V11";
 vendor = "Vickers";
 vendorUrl = "https://github.com/JeremiahChurch/acramatic_2100_fusion_360_post";
 legal = "Copyright (C) 2012-2022 by Autodesk, Inc.";
@@ -1756,6 +1757,8 @@ function onCyclePoint(x, y, z) {
         }
         break;
       case "tapping":
+      case "left-tapping":
+      case "right-tapping":
         gFeedModeModal.reset();
         writeBlock(
           gFeedModeModal.format(95), // use pitch
@@ -1764,28 +1767,20 @@ function onCyclePoint(x, y, z) {
           getCommonCycle(x, y, cycle.bottom - cycle.retract, cycle.retract, cycle.clearance),
           "P" + milliFormat.format(P),
           "F" + xyzFormat.format(tool.threadPitch)
+          // TODO: add J keyword for faster retract - J2 = multipler > 1 programming manual pg 185
         );
         break;
-      case "left-tapping":
+      case "tapping-with-chip-breaking":
         gFeedModeModal.reset();
         writeBlock(
           gFeedModeModal.format(95), // use pitch
+          gCycleModal.format(84.1), // FIXME: hardcoded to rigid tapping use useRidged options instead?
           gAbsIncModal.format(90),
-          gCycleModal.format(84.1),
           getCommonCycle(x, y, cycle.bottom - cycle.retract, cycle.retract, cycle.clearance),
-          "P" + milliFormat.format(P),
-          "F" + xyzFormat.format(tool.threadPitch)
-        );
-        break;
-      case "right-tapping":
-        gFeedModeModal.reset();
-        writeBlock(
-          gFeedModeModal.format(95), // use pitch
-          gAbsIncModal.format(90),
-          gCycleModal.format(84.1),
-          getCommonCycle(x, y, cycle.bottom - cycle.retract, cycle.retract, cycle.clearance),
-          "P" + milliFormat.format(P),
-          "F" + xyzFormat.format(tool.threadPitch)
+          // k & p word are additional for chip breaking
+          "P" + abcFormat.format((cycle.chipBreakDistance / tool.threadPitch)), // p number of reverse spindle revs to break chip
+          "F" + xyzFormat.format(tool.threadPitch),
+          "K" + xyzFormat.format(cycle.chipBreakDistance), // k = feed increment along spindle for chip break
         );
         break;
       case "fine-boring":
