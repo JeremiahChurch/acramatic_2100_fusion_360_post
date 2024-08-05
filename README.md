@@ -10,7 +10,6 @@ TODO:
 - [ ] Refactor WCS probing to start with incremental movement (G91) instead of fixed (G90)
 - [ ] fix probing-x & probing-y surface math from WCS to be correct
 - [ ] improve tool probing to use correct P word for tool type automatically
-- [ ] support more work offsets
 - [ ] remove hardcode rigid tapping and use post processor option to support both tap types
 
 ## Resources / References

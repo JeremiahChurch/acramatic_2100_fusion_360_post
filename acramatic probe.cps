@@ -19,8 +19,9 @@
 // REV07 -30/07/2024  ; Rotary Issue modifications
 // REV08 -30/07/2024  ; probing updates
 // REV09 -08/01/2024  ; tapping fixes
+// REV10 -08/05/2024  ; support multiple WCS
 //---------------------------------------------------------------------------//
-description = "Acramatic Probe V09";
+description = "Acramatic Probe V10";
 vendor = "Vickers";
 vendorUrl = "https://github.com/JeremiahChurch/acramatic_2100_fusion_360_post";
 legal = "Copyright (C) 2012-2022 by Autodesk, Inc.";
@@ -299,10 +300,9 @@ properties = {
 
 // wcs definiton
 wcsDefinitions = {
-  useZeroOffset: false,
+  useZeroOffset: true,
   wcs: [
-    { name: "Standard", format: "G", range: [54, 59] },
-    { name: "Extended", format: "G54.1 P", range: [1, 300] }
+    { name: "Standard", format: "H", range: [1, 32] }
   ]
 };
 
@@ -313,13 +313,13 @@ var singleLineCoolant = false; // specifies to output multiple coolant codes in 
 // {id: COOLANT_THROUGH_TOOL, on: "M07 P3 (myComment)", off: "M09"}
 var coolants = [
   { id: COOLANT_FLOOD, on: 8 },
-  { id: COOLANT_MIST, on: 12 },
-  { id: COOLANT_THROUGH_TOOL, on: 7 },
-  { id: COOLANT_AIR, on: 14, off: 15 },
-  { id: COOLANT_AIR_THROUGH_TOOL, on: 144, off: 145 },
-  { id: COOLANT_SUCTION, on: 132, off: 133 },
-  { id: COOLANT_FLOOD_MIST, on: [7, 12], off: 9 },
-  { id: COOLANT_FLOOD_THROUGH_TOOL, on: [8, 7], off: 9 },
+  { id: COOLANT_MIST },
+  { id: COOLANT_THROUGH_TOOL, on: 27 },
+  { id: COOLANT_AIR },
+  { id: COOLANT_AIR_THROUGH_TOOL },
+  { id: COOLANT_SUCTION },
+  { id: COOLANT_FLOOD_MIST },
+  { id: COOLANT_FLOOD_THROUGH_TOOL },
   { id: COOLANT_OFF, off: 9 }
 ];
 
@@ -329,7 +329,8 @@ var permittedCommentChars = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,=_-";
 
 var gFormat = createFormat({ prefix: "G", width: 2, zeropad: true, decimals: 1 });
 var mFormat = createFormat({ prefix: "M", width: 2, zeropad: true, decimals: 1 });
-var hFormat = createFormat({ prefix: "H", width: 2, zeropad: true, decimals: 1 });
+//var hFormat = createFormat({ prefix: "H", width: 2, zeropad: true, decimals: 1 });
+var hFormat = createFormat({ prefix: "H", decimals: 0});
 var dFormat = createFormat({ prefix: "D", width: 2, zeropad: true, decimals: 1 });
 var probeWCSFormat = createFormat({ decimals: 0, forceDecimal: true });
 
@@ -1457,8 +1458,8 @@ function onSection() {
     }
     forceWorkPlane();
     writeBlock(gFormat.format(17), gFormat.format(90), gFeedModeModal.format(getProperty("useG95") ? 95 : 94));
-    writeBlock('H1')
-    // writeBlock(currentSection.wcs);
+    //writeBlock('H1')
+    writeBlock(currentSection.wcs);
     currentWorkOffset = currentSection.workOffset;
   }
 
