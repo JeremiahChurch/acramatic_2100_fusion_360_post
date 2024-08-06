@@ -21,15 +21,16 @@
 // REV09 -08/01/2024  ; tapping fixes
 // REV10 -08/05/2024  ; support multiple WCS
 // REV11 -08/05/2024  ; chip breaking for tapping
+// REV12 -08/05/2024  ; fix probe math & remove unused code
 //---------------------------------------------------------------------------//
-description = "Acramatic Probe V11";
+description = "Acramatic Probe V12";
 vendor = "Vickers";
 vendorUrl = "https://github.com/JeremiahChurch/acramatic_2100_fusion_360_post";
 legal = "Copyright (C) 2012-2022 by Autodesk, Inc.";
 certificationLevel = 2;
 minimumRevision = 45702;
 
-longDescription = "Acramatic 2100 post illustrating inverse time feHed with an A-axis.";
+longDescription = "Acramatic 2100 post with probing & A-axis rotary support";
 
 extension = "nc";
 programNameIsInteger = false;
@@ -45,7 +46,7 @@ minimumCircularSweep = toRad(0.01);
 maximumCircularSweep = toRad(180);
 allowHelicalMoves = true;
 allowedCircularPlanes = undefined; // allow any circular motion
-highFeedrate = (unit == IN) ? 500 : 5000;
+probeFeedrate = (unit == IN) ? 100 : 2540;
 
 // user-defined properties
 properties = {
@@ -110,14 +111,6 @@ properties = {
     value: true,
     scope: "post"
   },
-  o8: {
-    title: "8 Digit program number",
-    description: "Specifies that an 8 digit program number is needed.",
-    group: "formats",
-    type: "boolean",
-    value: false,
-    scope: "post"
-  },
   separateWordsWithSpace: {
     title: "Separate words with space",
     description: "Adds spaces between words if 'yes' is selected.",
@@ -128,28 +121,12 @@ properties = {
   },
   UseCustomTCL: {
     title: "Use Custom TCL",
-    description: "Tool Change at G53 x & Y defind in post.",
+    description: "Tool Change at G53 x & Y defined in post.",
     group: "preferences",
     type: "boolean",
     value: false,
     scope: "post"
   },
-  UseSuction: {
-    title: "Enable Mist Collector",
-    description: "Enable mist collector by default.",
-    group: "preferences",
-    type: "boolean",
-    value: false,
-    scope: "post"
-  },
-  // UseToolBreakage: {
-  //   title: "Enable Tool Breakage output",
-  //   description: "Enable Tool Breakage output by default.",
-  //   group: "preferences",
-  //   type: "boolean",
-  //   value: true,
-  //   scope: "post"
-  // },
   UseToolBreakage: {
     title: "Enable Tool Breakage output",
     description: "Enable Tool Breakage output by default.",
@@ -238,14 +215,6 @@ properties = {
     value: false,
     scope: "post"
   },
-  useG54x4: {
-    title: "Use G54.4",
-    description: "Fanuc 30i supports G54.4 for workpiece error compensation.",
-    group: "probing",
-    type: "boolean",
-    value: false,
-    scope: "post"
-  },
   reverseAAxis: {
     title: "Reverse A-axis",
     description: "Makes the A-axis rotate the opposite way.",
@@ -299,7 +268,7 @@ properties = {
   }
 };
 
-// wcs definiton
+// wcs definition
 wcsDefinitions = {
   useZeroOffset: true,
   wcs: [
@@ -308,10 +277,6 @@ wcsDefinitions = {
 };
 
 var singleLineCoolant = false; // specifies to output multiple coolant codes in one line rather than in separate lines
-// samples:
-// {id: COOLANT_THROUGH_TOOL, on: 7, off: 9}
-// {id: COOLANT_THROUGH_TOOL, on: [7], off: [9]}
-// {id: COOLANT_THROUGH_TOOL, on: "M07 P3 (myComment)", off: "M09"}
 var coolants = [
   { id: COOLANT_FLOOD, on: 8 },
   { id: COOLANT_MIST },
@@ -519,31 +484,9 @@ function onOpen() {
 
   if (programName) {
     var programId;
-    //try {
-     // programId = getAsInt(programName);
-   // } catch (e) {
-     // error(localize("Program name must be a number."));
-     // return;
-  //  }
-    // if (getProperty("o8")) {
-    //   if (!((programId >= 1) && (programId <= 99999999))) {
-    //     error(localize("Program number is out of range."));
-    //     return;
-    //   }
-    // } else {
-    //   if (!((programId >= 1) && (programId <= 9999))) {
-    //     error(localize("Program number is out of range."));
-    //     return;
-    //   }
-    // }
-    // if ((programId >= 8000) && (programId <= 9999)) {
-    //   warning(localize("Program number is reserved by tool builder."));
-    // }
-    oFormat = createFormat({ width: (getProperty("o8") ? 8 : 4), zeropad: true, decimals: 0 });
     if (programComment) {
-      writeln("O" + oFormat.format(programId) + " (" + filterText(String(programComment).toUpperCase(), permittedCommentChars) + ")");
+      writeln(" (" + filterText(String(programComment).toUpperCase(), permittedCommentChars) + ")");
     } else {
-      //writeln("O" + oFormat.format(programId));
       writeBlock(": (PGM, NAME=\"" + programName + "\")");
     }
     lastSubprogram = programId;
@@ -1330,9 +1273,6 @@ function onSection() {
       setSmoothing(false);
     }
   }
-  if (getProperty("UseSuction")) {
-    writeBlock(mFormat.format(132));
-  }
 
   if (hasParameter("operation-comment")) {
     var comment = getParameter("operation-comment");
@@ -1529,9 +1469,6 @@ function onSection() {
   validate(lengthCompensationActive, "Length compensation is not active.");
 
   if (isProbeOperation()) {
-    validate(probeVariables.probeAngleMethod != "G68", "You cannot probe while G68 Rotation is in effect.");
-    validate(probeVariables.probeAngleMethod != "G54.4", "You cannot probe while workpiece setting error compensation G54.4 is enabled.");
-    //writeBlock(mFormat.format(165), "P" + 9832); // spin the probe on
     inspectionCreateResultsFileHeader();
   }
 
@@ -1593,7 +1530,7 @@ function approach(value) {
 }
 
 function setProbeAngleMethod() {
-  probeVariables.probeAngleMethod = (machineConfiguration.getNumberOfAxes() < 5 || is3D()) ? (getProperty("useG54x4") ? "G54.4" : "G68") : "UNSUPPORTED";
+  probeVariables.probeAngleMethod = (machineConfiguration.getNumberOfAxes() < 5 || is3D()) ? "G68" : "UNSUPPORTED";
   var axes = [machineConfiguration.getAxisU(), machineConfiguration.getAxisV(), machineConfiguration.getAxisW()];
   for (var i = 0; i < axes.length; ++i) {
     if (axes[i].isEnabled() && isSameDirection((axes[i].getAxis()).getAbsolute(), new Vector(0, 0, 1)) && axes[i].isTable()) {
@@ -1659,15 +1596,13 @@ function protectedProbeMove(_cycle, x, y, z) {
   var _y = yOutput.format(y);
   var _z = zOutput.format(z);
   if (_z && z >= getCurrentPosition().z) {
-    writeBlock(mFormat.format(165), "P" + 9810, _z, feedOutput.format(cycle.feedrate)); // protected positioning move
+    writeBlock( gMotionModal.format(0) , _z,  feedOutput.format(probeFeedrate));
   }
   if (_x || _y) {
-    writeBlock(mFormat.format(165), "P" + 9810, _x, _y, feedOutput.format(highFeedrate)); // protected positioning move
+    writeBlock( gMotionModal.format(0) , _x, _y,  feedOutput.format(probeFeedrate));
   }
   if (_z && z < getCurrentPosition().z) {
-   // writeBlock(mFormat.format(165), "P" + 9810, _z, feedOutput.format(cycle.feedrate)); // protected positioning move
-    writeBlock( gMotionModal.format(0) , _z);
-
+    writeBlock( gMotionModal.format(0) , _z,  feedOutput.format(probeFeedrate));
   }
 }
 
@@ -1778,7 +1713,7 @@ function onCyclePoint(x, y, z) {
           gAbsIncModal.format(90),
           getCommonCycle(x, y, cycle.bottom - cycle.retract, cycle.retract, cycle.clearance),
           // k & p word are additional for chip breaking
-          "P" + abcFormat.format((cycle.chipBreakDistance / tool.threadPitch)), // p number of reverse spindle revs to break chip
+          "P" + milliFormat.format((cycle.chipBreakDistance / tool.threadPitch)), // p number of reverse spindle revs to break chip
           "F" + xyzFormat.format(tool.threadPitch),
           "K" + xyzFormat.format(cycle.chipBreakDistance), // k = feed increment along spindle for chip break
         );
@@ -1868,20 +1803,20 @@ function onCyclePoint(x, y, z) {
         protectedProbeMove(cycle, x, y, z - cycle.depth);
         writeBlock(
           gFormat.format(77),
-          "X" + xyzFormat.format(x + approach(cycle.approach1) * (cycle.probeClearance + tool.diameter / 2)),
-          //"Q" + xyzFormat.format(cycle.probeOvertravel),
+          "X" + xyzFormat.format(x),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           getProbingArguments(cycle, true),
-          "I" + xyzFormat.format(x) // FIXME: not quite right - needs to look at offset from WCS
+          "I" + xyzFormat.format(x + approach(cycle.approach1) * (cycle.probeClearance + tool.diameter / 2))
         );
         break;
       case "probing-y":
         protectedProbeMove(cycle, x, y, z - cycle.depth);
         writeBlock(
           gFormat.format(77),
-          "Y" + xyzFormat.format(y + approach(cycle.approach1) * (cycle.probeClearance + tool.diameter / 2)),
-          //"Q" + xyzFormat.format(cycle.probeOvertravel),
+          "Y" + xyzFormat.format(y),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           getProbingArguments(cycle, true),
-          "J" + xyzFormat.format(y)// FIXME: not quite right - needs to look at offset from WCS
+          "J" + xyzFormat.format(y + approach(cycle.approach1) * (cycle.probeClearance + tool.diameter / 2))
         );
         break;
       case "probing-z":
@@ -1889,11 +1824,11 @@ function onCyclePoint(x, y, z) {
         writeBlock( gMotionModal.format(0) , "Z" + xyzFormat.format(Math.min(z - cycle.depth + cycle.probeClearance, cycle.retract)));
         writeBlock(
           gFormat.format(77),
-          "Z" + xyzFormat.format(z - cycle.depth),
-          //"Q" + xyzFormat.format(cycle.probeOvertravel),
+          "Z" + xyzFormat.format(z),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           getProbingArguments(cycle, true),
          // (currentSection.workoffset ==0 ? "K" + xyzFormat.format(z - cycle.depth-cycle.bottom):undefined)
-          "K" + xyzFormat.format(z - cycle.depth-cycle.bottom)
+          "K" + xyzFormat.format(z - cycle.depth)
         );
         break;
       case "probing-x-wall":
@@ -1902,7 +1837,7 @@ function onCyclePoint(x, y, z) {
           gFormat.format(79),
           "X" + xyzFormat.format(cycle.width1),
           "Z" + xyzFormat.format(z - cycle.depth),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "R" + xyzFormat.format(cycle.probeClearance),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(cycle.width1)
@@ -1914,7 +1849,7 @@ function onCyclePoint(x, y, z) {
           gFormat.format(79),
           "Y" + xyzFormat.format(cycle.width1),
           "Z" + xyzFormat.format(z - cycle.depth),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "R" + xyzFormat.format(cycle.probeClearance),
           getProbingArguments(cycle, true),
           "J" + xyzFormat.format(cycle.width1)
@@ -1925,7 +1860,7 @@ function onCyclePoint(x, y, z) {
         writeBlock(
           gFormat.format(79),
           "X" + xyzFormat.format(cycle.width1),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           // not required "R" + xyzFormat.format(cycle.probeClearance),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(cycle.width1)
@@ -1937,7 +1872,7 @@ function onCyclePoint(x, y, z) {
           gFormat.format(79),
           "X" + xyzFormat.format(cycle.width1),
           "Z" + xyzFormat.format(z - cycle.depth),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "R" + xyzFormat.format(-cycle.probeClearance),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(cycle.width1)
@@ -1948,7 +1883,7 @@ function onCyclePoint(x, y, z) {
         writeBlock(
           gFormat.format(79),
           "Y" + xyzFormat.format(cycle.width1),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           // not required "R" + xyzFormat.format(cycle.probeClearance),
           getProbingArguments(cycle, true),
           "J" + xyzFormat.format(cycle.width1)
@@ -1960,7 +1895,7 @@ function onCyclePoint(x, y, z) {
           gFormat.format(79),
           "Y" + xyzFormat.format(cycle.width1),
           "Z" + xyzFormat.format(z - cycle.depth),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "R" + xyzFormat.format(-cycle.probeClearance),
           getProbingArguments(cycle, true),
           "J" + xyzFormat.format(cycle.width1)
@@ -1972,7 +1907,7 @@ function onCyclePoint(x, y, z) {
           gFormat.format(78),
           "P" + xyzFormat.format(cycle.width1),
           "Z" + xyzFormat.format(z - cycle.depth),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "R" + xyzFormat.format(cycle.probeClearance),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(x),
@@ -1986,9 +1921,9 @@ function onCyclePoint(x, y, z) {
           "A" + xyzFormat.format(cycle.partialCircleAngleA),
           "B" + xyzFormat.format(cycle.partialCircleAngleB),
           "C" + xyzFormat.format(cycle.partialCircleAngleC),
-          "D" + xyzFormat.format(cycle.width1),
+          "P" + xyzFormat.format(cycle.width1),
           "Z" + xyzFormat.format(z - cycle.depth),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "R" + xyzFormat.format(cycle.probeClearance),
           getProbingArguments(cycle, true)
         );
@@ -1997,8 +1932,8 @@ function onCyclePoint(x, y, z) {
         protectedProbeMove(cycle, x, y, z - cycle.depth);
         writeBlock(
           gFormat.format(78),
-          "D" + xyzFormat.format(cycle.width1),
-          "P" + xyzFormat.format(cycle.probeOvertravel),
+          "P" + xyzFormat.format(cycle.width1),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           // not required "R" + xyzFormat.format(cycle.probeClearance),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(x),
@@ -2013,7 +1948,7 @@ function onCyclePoint(x, y, z) {
           "B" + xyzFormat.format(cycle.partialCircleAngleB),
           "C" + xyzFormat.format(cycle.partialCircleAngleC),
           "P" + xyzFormat.format(cycle.width1),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(x),
           "J" + xyzFormat.format(y)
@@ -2025,8 +1960,8 @@ function onCyclePoint(x, y, z) {
           gFormat.format(78),
           "Z" + xyzFormat.format(z - cycle.depth),
           "P" + xyzFormat.format(cycle.width1),
-         // "Q" + xyzFormat.format(cycle.probeOvertravel),
-          //"R" + xyzFormat.format(-cycle.probeClearance),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
+          "R" + xyzFormat.format(-cycle.probeClearance),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(x),
           "J" + xyzFormat.format(y)
@@ -2041,7 +1976,7 @@ function onCyclePoint(x, y, z) {
           "B" + xyzFormat.format(cycle.partialCircleAngleB),
           "C" + xyzFormat.format(cycle.partialCircleAngleC),
           "p" + xyzFormat.format(cycle.width1),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "R" + xyzFormat.format(-cycle.probeClearance),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(x),
@@ -2053,7 +1988,7 @@ function onCyclePoint(x, y, z) {
         writeBlock(
           gFormat.format(79),
           "X" + xyzFormat.format(cycle.width1),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           // not required "R" + xyzFormat.format(-cycle.probeClearance),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(x),
@@ -2062,7 +1997,7 @@ function onCyclePoint(x, y, z) {
         writeBlock(
           gFormat.format(79),
           "Y" + xyzFormat.format(cycle.width2),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           // not required "R" + xyzFormat.format(-cycle.probeClearance),
           getProbingArguments(cycle, true)
         );
@@ -2074,7 +2009,7 @@ function onCyclePoint(x, y, z) {
           "Z" + xyzFormat.format(z - cycle.depth),
           "X" + xyzFormat.format(cycle.width1),
           "R" + xyzFormat.format(cycle.probeClearance),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(x)
         );
@@ -2083,7 +2018,7 @@ function onCyclePoint(x, y, z) {
           "Z" + xyzFormat.format(z - cycle.depth),
           "Y" + xyzFormat.format(cycle.width2),
           "R" + xyzFormat.format(cycle.probeClearance),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           getProbingArguments(cycle, true),
           "J" + xyzFormat.format(y)
         );
@@ -2094,7 +2029,7 @@ function onCyclePoint(x, y, z) {
           gFormat.format(79),
           "Z" + xyzFormat.format(z - cycle.depth),
           "X" + xyzFormat.format(cycle.width1),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "R" + xyzFormat.format(-cycle.probeClearance),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(x)
@@ -2103,7 +2038,7 @@ function onCyclePoint(x, y, z) {
           gFormat.format(79),
           "Z" + xyzFormat.format(z - cycle.depth),
           "Y" + xyzFormat.format(cycle.width2),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "R" + xyzFormat.format(-cycle.probeClearance),
           getProbingArguments(cycle, true),
           "J" + xyzFormat.format(y)
@@ -2130,7 +2065,7 @@ function onCyclePoint(x, y, z) {
           gFormat.format(75), xOutput.format(cornerX), yOutput.format(cornerY),
           ( "I" + xyzFormat.format(cornerI)),
           ( "J" + xyzFormat.format(cornerJ)),
-          //"Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
          // getProbingArguments(cycle, true)
         );
         break;
@@ -2152,24 +2087,22 @@ function onCyclePoint(x, y, z) {
         protectedProbeMove(cycle, x, y, z - cycle.depth);
 
         writeBlock(
-          gFormat.format(76
-
-          ), xOutput.format(cornerX), yOutput.format(cornerY),
+          gFormat.format(76), xOutput.format(cornerX), yOutput.format(cornerY),
           conditional(cornerI != 0, "I" + xyzFormat.format(cornerI)),
           conditional(cornerJ != 0, "J" + xyzFormat.format(cornerJ)),
           "I" + xyzFormat.format(x),
           "J" + xyzFormat.format(y)
-         // "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
          // getProbingArguments(cycle, true)
         );
         break;
       case "probing-x-plane-angle":
         protectedProbeMove(cycle, x, y, z - cycle.depth);
         writeBlock(
-          mFormat.format(165), "P" + 9843,
+          gFormat.format(51.3), // this probably isn't right and won't work with release 2
           "X" + xyzFormat.format(x + approach(cycle.approach1) * (cycle.probeClearance + tool.diameter / 2)),
-          "D" + xyzFormat.format(cycle.probeSpacing),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "P" + xyzFormat.format(cycle.probeSpacing),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "A" + xyzFormat.format(cycle.nominalAngle != undefined ? cycle.nominalAngle : 90),
           getProbingArguments(cycle, false)
         );
@@ -2181,10 +2114,10 @@ function onCyclePoint(x, y, z) {
       case "probing-y-plane-angle":
         protectedProbeMove(cycle, x, y, z - cycle.depth);
         writeBlock(
-          mFormat.format(165), "P" + 9843,
+          gFormat.format(51.3), // this probably isn't right and won't work with release 2
           "Y" + xyzFormat.format(y + approach(cycle.approach1) * (cycle.probeClearance + tool.diameter / 2)),
-          "D" + xyzFormat.format(cycle.probeSpacing),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "P" + xyzFormat.format(cycle.probeSpacing),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "A" + xyzFormat.format(cycle.nominalAngle != undefined ? cycle.nominalAngle : 0),
           getProbingArguments(cycle, false)
         );
@@ -2196,13 +2129,13 @@ function onCyclePoint(x, y, z) {
       case "probing-xy-pcd-hole":
         protectedProbeMove(cycle, x, y, z);
         writeBlock(
-          mFormat.format(165), "P" + 9819,
-          "A" + xyzFormat.format(cycle.pcdStartingAngle),
+          gFormat.format(78),
+          "A" + xyzFormat.format(cycle.pcdStartingAngle), // ABC are supposed to be 3 different angles, A is correct here, b & C are wrong
           "B" + xyzFormat.format(cycle.numberOfSubfeatures),
           "C" + xyzFormat.format(cycle.widthPCD),
-          "D" + xyzFormat.format(cycle.widthFeature),
+          "P" + xyzFormat.format(cycle.widthFeature),
           "K" + xyzFormat.format(z - cycle.depth),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           getProbingArguments(cycle, false)
         );
         if (cycle.updateToolWear) {
@@ -2213,13 +2146,13 @@ function onCyclePoint(x, y, z) {
       case "probing-xy-pcd-boss":
         protectedProbeMove(cycle, x, y, z);
         writeBlock(
-          mFormat.format(165), "P" + 9819,
-          "A" + xyzFormat.format(cycle.pcdStartingAngle),
+          gFormat.format(78),
+          "A" + xyzFormat.format(cycle.pcdStartingAngle), // ABC are supposed to be 3 different angles, A is correct here, b & C are wrong
           "B" + xyzFormat.format(cycle.numberOfSubfeatures),
           "C" + xyzFormat.format(cycle.widthPCD),
-          "D" + xyzFormat.format(cycle.widthFeature),
+          "P" + xyzFormat.format(cycle.widthFeature),
           "Z" + xyzFormat.format(z - cycle.depth),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "R" + xyzFormat.format(cycle.probeClearance),
           getProbingArguments(cycle, false)
         );
@@ -2949,7 +2882,6 @@ function onSectionEnd() {
     }
   }
   if (isProbeOperation()) {
-    //writeBlock(mFormat.format(165), "P" + 9833); // spin the probe off
     if (probeVariables.probeAngleMethod != "G68") {
       setProbeAngle(); // output probe angle rotations if required
     }
@@ -3111,7 +3043,6 @@ function onClose() {
 
   setCoolant(COOLANT_OFF);
   onCommand(COMMAND_STOP_SPINDLE);
-  //writeRetract(Z);
 
   //disableLengthCompensation(true);
   setSmoothing(false);
@@ -3119,13 +3050,6 @@ function onClose() {
 
   //setWorkPlane(new Vector(0, 0, 0)); // reset working plane
 
-  if (probeVariables.probeAngleMethod == "G54.4") {
-    writeBlock(gFormat.format(54.4), "P0");
-  }
-  //writeRetract(X, Y);
-  if (getProperty("UseSuction")) {
-    writeBlock(mFormat.format(133));
-  }
   onImpliedCommand(COMMAND_END);
   onImpliedCommand(COMMAND_STOP_SPINDLE);
   writeBlock(mFormat.format(83)); // Part Counter,
