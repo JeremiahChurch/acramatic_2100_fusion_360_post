@@ -21,15 +21,16 @@
 // REV09 -08/01/2024  ; tapping fixes
 // REV10 -08/05/2024  ; support multiple WCS
 // REV11 -08/05/2024  ; chip breaking for tapping
+// REV12 -08/05/2024  ; fix probe math & remove unused code
 //---------------------------------------------------------------------------//
-description = "Acramatic Probe V11";
+description = "Acramatic Probe V12";
 vendor = "Vickers";
 vendorUrl = "https://github.com/JeremiahChurch/acramatic_2100_fusion_360_post";
 legal = "Copyright (C) 2012-2022 by Autodesk, Inc.";
 certificationLevel = 2;
 minimumRevision = 45702;
 
-longDescription = "Acramatic 2100 post illustrating inverse time feHed with an A-axis.";
+longDescription = "Acramatic 2100 post with probing & A-axis rotary support";
 
 extension = "nc";
 programNameIsInteger = false;
@@ -45,7 +46,6 @@ minimumCircularSweep = toRad(0.01);
 maximumCircularSweep = toRad(180);
 allowHelicalMoves = true;
 allowedCircularPlanes = undefined; // allow any circular motion
-highFeedrate = (unit == IN) ? 500 : 5000;
 probeFeedrate = (unit == IN) ? 100 : 2540;
 
 // user-defined properties
@@ -3049,11 +3049,6 @@ function onClose() {
   zOutput.reset();
 
   //setWorkPlane(new Vector(0, 0, 0)); // reset working plane
-
-  if (probeVariables.probeAngleMethod == "G54.4") {
-    writeBlock(gFormat.format(54.4), "P0");
-  }
-  //writeRetract(X, Y);
 
   onImpliedCommand(COMMAND_END);
   onImpliedCommand(COMMAND_STOP_SPINDLE);

@@ -6,9 +6,9 @@ Added support for spindle probing, tool probing and rotary 4th A axis.
 
 TODO:
 
+- [ ] Fix probing math to accurately update the WCS - some are right, some aren't - watch IJK values in probing ops
 - [ ] G51 vector probe for WCS [G51 doesn't set coordinates](https://www.cnczone.com/forums/cincinnati-cnc/471344-use-g51-vector-probe-update-offsets.html) (release 2 limit/bug?)
 - [ ] Refactor WCS probing to start with incremental movement (G91) instead of fixed (G90)
-- [ ] fix probing-x & probing-y surface math from WCS to be correct
 - [ ] improve tool probing to use correct P word for tool type automatically
 - [ ] remove hardcode rigid tapping and use post processor option to support both tap types
 
@@ -22,7 +22,7 @@ PDFs etc related to cinci/a2100 [here](https://tongboy.com/files/cinci/) please 
 * G75 internal corner
 * G76 external corner
 * G77 locate surface
-* G78 bore buss
+* G78 bore or boss
 * G79 pocket or web
 * G51 vector probe
 
