@@ -1804,7 +1804,7 @@ function onCyclePoint(x, y, z) {
         writeBlock(
           gFormat.format(77),
           "X" + xyzFormat.format(x),
-          //"Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(x + approach(cycle.approach1) * (cycle.probeClearance + tool.diameter / 2))
         );
@@ -1814,7 +1814,7 @@ function onCyclePoint(x, y, z) {
         writeBlock(
           gFormat.format(77),
           "Y" + xyzFormat.format(y),
-          //"Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           getProbingArguments(cycle, true),
           "J" + xyzFormat.format(y + approach(cycle.approach1) * (cycle.probeClearance + tool.diameter / 2))
         );
@@ -1825,7 +1825,7 @@ function onCyclePoint(x, y, z) {
         writeBlock(
           gFormat.format(77),
           "Z" + xyzFormat.format(z),
-          //"Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           getProbingArguments(cycle, true),
          // (currentSection.workoffset ==0 ? "K" + xyzFormat.format(z - cycle.depth-cycle.bottom):undefined)
           "K" + xyzFormat.format(z - cycle.depth)
@@ -1837,7 +1837,7 @@ function onCyclePoint(x, y, z) {
           gFormat.format(79),
           "X" + xyzFormat.format(cycle.width1),
           "Z" + xyzFormat.format(z - cycle.depth),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "R" + xyzFormat.format(cycle.probeClearance),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(cycle.width1)
@@ -1849,7 +1849,7 @@ function onCyclePoint(x, y, z) {
           gFormat.format(79),
           "Y" + xyzFormat.format(cycle.width1),
           "Z" + xyzFormat.format(z - cycle.depth),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "R" + xyzFormat.format(cycle.probeClearance),
           getProbingArguments(cycle, true),
           "J" + xyzFormat.format(cycle.width1)
@@ -1860,7 +1860,7 @@ function onCyclePoint(x, y, z) {
         writeBlock(
           gFormat.format(79),
           "X" + xyzFormat.format(cycle.width1),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           // not required "R" + xyzFormat.format(cycle.probeClearance),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(cycle.width1)
@@ -1872,7 +1872,7 @@ function onCyclePoint(x, y, z) {
           gFormat.format(79),
           "X" + xyzFormat.format(cycle.width1),
           "Z" + xyzFormat.format(z - cycle.depth),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "R" + xyzFormat.format(-cycle.probeClearance),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(cycle.width1)
@@ -1883,7 +1883,7 @@ function onCyclePoint(x, y, z) {
         writeBlock(
           gFormat.format(79),
           "Y" + xyzFormat.format(cycle.width1),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           // not required "R" + xyzFormat.format(cycle.probeClearance),
           getProbingArguments(cycle, true),
           "J" + xyzFormat.format(cycle.width1)
@@ -1895,7 +1895,7 @@ function onCyclePoint(x, y, z) {
           gFormat.format(79),
           "Y" + xyzFormat.format(cycle.width1),
           "Z" + xyzFormat.format(z - cycle.depth),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "R" + xyzFormat.format(-cycle.probeClearance),
           getProbingArguments(cycle, true),
           "J" + xyzFormat.format(cycle.width1)
@@ -1907,7 +1907,7 @@ function onCyclePoint(x, y, z) {
           gFormat.format(78),
           "P" + xyzFormat.format(cycle.width1),
           "Z" + xyzFormat.format(z - cycle.depth),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "R" + xyzFormat.format(cycle.probeClearance),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(x),
@@ -1921,9 +1921,9 @@ function onCyclePoint(x, y, z) {
           "A" + xyzFormat.format(cycle.partialCircleAngleA),
           "B" + xyzFormat.format(cycle.partialCircleAngleB),
           "C" + xyzFormat.format(cycle.partialCircleAngleC),
-          "D" + xyzFormat.format(cycle.width1),
+          "P" + xyzFormat.format(cycle.width1),
           "Z" + xyzFormat.format(z - cycle.depth),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "R" + xyzFormat.format(cycle.probeClearance),
           getProbingArguments(cycle, true)
         );
@@ -1932,8 +1932,8 @@ function onCyclePoint(x, y, z) {
         protectedProbeMove(cycle, x, y, z - cycle.depth);
         writeBlock(
           gFormat.format(78),
-          "D" + xyzFormat.format(cycle.width1),
-          "P" + xyzFormat.format(cycle.probeOvertravel),
+          "P" + xyzFormat.format(cycle.width1),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           // not required "R" + xyzFormat.format(cycle.probeClearance),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(x),
@@ -1948,7 +1948,7 @@ function onCyclePoint(x, y, z) {
           "B" + xyzFormat.format(cycle.partialCircleAngleB),
           "C" + xyzFormat.format(cycle.partialCircleAngleC),
           "P" + xyzFormat.format(cycle.width1),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(x),
           "J" + xyzFormat.format(y)
@@ -1960,8 +1960,8 @@ function onCyclePoint(x, y, z) {
           gFormat.format(78),
           "Z" + xyzFormat.format(z - cycle.depth),
           "P" + xyzFormat.format(cycle.width1),
-         // "Q" + xyzFormat.format(cycle.probeOvertravel),
-          //"R" + xyzFormat.format(-cycle.probeClearance),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
+          "R" + xyzFormat.format(-cycle.probeClearance),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(x),
           "J" + xyzFormat.format(y)
@@ -1976,7 +1976,7 @@ function onCyclePoint(x, y, z) {
           "B" + xyzFormat.format(cycle.partialCircleAngleB),
           "C" + xyzFormat.format(cycle.partialCircleAngleC),
           "p" + xyzFormat.format(cycle.width1),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "R" + xyzFormat.format(-cycle.probeClearance),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(x),
@@ -1988,7 +1988,7 @@ function onCyclePoint(x, y, z) {
         writeBlock(
           gFormat.format(79),
           "X" + xyzFormat.format(cycle.width1),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           // not required "R" + xyzFormat.format(-cycle.probeClearance),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(x),
@@ -1997,7 +1997,7 @@ function onCyclePoint(x, y, z) {
         writeBlock(
           gFormat.format(79),
           "Y" + xyzFormat.format(cycle.width2),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           // not required "R" + xyzFormat.format(-cycle.probeClearance),
           getProbingArguments(cycle, true)
         );
@@ -2009,7 +2009,7 @@ function onCyclePoint(x, y, z) {
           "Z" + xyzFormat.format(z - cycle.depth),
           "X" + xyzFormat.format(cycle.width1),
           "R" + xyzFormat.format(cycle.probeClearance),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(x)
         );
@@ -2018,7 +2018,7 @@ function onCyclePoint(x, y, z) {
           "Z" + xyzFormat.format(z - cycle.depth),
           "Y" + xyzFormat.format(cycle.width2),
           "R" + xyzFormat.format(cycle.probeClearance),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           getProbingArguments(cycle, true),
           "J" + xyzFormat.format(y)
         );
@@ -2029,7 +2029,7 @@ function onCyclePoint(x, y, z) {
           gFormat.format(79),
           "Z" + xyzFormat.format(z - cycle.depth),
           "X" + xyzFormat.format(cycle.width1),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "R" + xyzFormat.format(-cycle.probeClearance),
           getProbingArguments(cycle, true),
           "I" + xyzFormat.format(x)
@@ -2038,7 +2038,7 @@ function onCyclePoint(x, y, z) {
           gFormat.format(79),
           "Z" + xyzFormat.format(z - cycle.depth),
           "Y" + xyzFormat.format(cycle.width2),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "R" + xyzFormat.format(-cycle.probeClearance),
           getProbingArguments(cycle, true),
           "J" + xyzFormat.format(y)
@@ -2065,7 +2065,7 @@ function onCyclePoint(x, y, z) {
           gFormat.format(75), xOutput.format(cornerX), yOutput.format(cornerY),
           ( "I" + xyzFormat.format(cornerI)),
           ( "J" + xyzFormat.format(cornerJ)),
-          //"Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
          // getProbingArguments(cycle, true)
         );
         break;
@@ -2092,7 +2092,7 @@ function onCyclePoint(x, y, z) {
           conditional(cornerJ != 0, "J" + xyzFormat.format(cornerJ)),
           "I" + xyzFormat.format(x),
           "J" + xyzFormat.format(y)
-         // "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
          // getProbingArguments(cycle, true)
         );
         break;
@@ -2101,8 +2101,8 @@ function onCyclePoint(x, y, z) {
         writeBlock(
           gFormat.format(51.3), // this probably isn't right and won't work with release 2
           "X" + xyzFormat.format(x + approach(cycle.approach1) * (cycle.probeClearance + tool.diameter / 2)),
-          "D" + xyzFormat.format(cycle.probeSpacing),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "P" + xyzFormat.format(cycle.probeSpacing),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "A" + xyzFormat.format(cycle.nominalAngle != undefined ? cycle.nominalAngle : 90),
           getProbingArguments(cycle, false)
         );
@@ -2116,8 +2116,8 @@ function onCyclePoint(x, y, z) {
         writeBlock(
           gFormat.format(51.3), // this probably isn't right and won't work with release 2
           "Y" + xyzFormat.format(y + approach(cycle.approach1) * (cycle.probeClearance + tool.diameter / 2)),
-          "D" + xyzFormat.format(cycle.probeSpacing),
-          "Q" + xyzFormat.format(cycle.probeOvertravel),
+          "P" + xyzFormat.format(cycle.probeSpacing),
+          "D" + xyzFormat.format(cycle.probeOvertravel),
           "A" + xyzFormat.format(cycle.nominalAngle != undefined ? cycle.nominalAngle : 0),
           getProbingArguments(cycle, false)
         );

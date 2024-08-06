@@ -8,7 +8,6 @@ TODO:
 
 - [ ] Fix probing math to accurately update the WCS - some are right, some aren't - watch IJK values in probing ops
 - [ ] G51 vector probe for WCS [G51 doesn't set coordinates](https://www.cnczone.com/forums/cincinnati-cnc/471344-use-g51-vector-probe-update-offsets.html) (release 2 limit/bug?)
-- [ ] Refactor WCS probing to start with incremental movement (G91) instead of fixed (G90)
 - [ ] improve tool probing to use correct P word for tool type automatically
 - [ ] remove hardcode rigid tapping and use post processor option to support both tap types
 
