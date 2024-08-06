@@ -111,14 +111,6 @@ properties = {
     value: true,
     scope: "post"
   },
-  o8: {
-    title: "8 Digit program number",
-    description: "Specifies that an 8 digit program number is needed.",
-    group: "formats",
-    type: "boolean",
-    value: false,
-    scope: "post"
-  },
   separateWordsWithSpace: {
     title: "Separate words with space",
     description: "Adds spaces between words if 'yes' is selected.",
@@ -129,28 +121,12 @@ properties = {
   },
   UseCustomTCL: {
     title: "Use Custom TCL",
-    description: "Tool Change at G53 x & Y defind in post.",
+    description: "Tool Change at G53 x & Y defined in post.",
     group: "preferences",
     type: "boolean",
     value: false,
     scope: "post"
   },
-  UseSuction: {
-    title: "Enable Mist Collector",
-    description: "Enable mist collector by default.",
-    group: "preferences",
-    type: "boolean",
-    value: false,
-    scope: "post"
-  },
-  // UseToolBreakage: {
-  //   title: "Enable Tool Breakage output",
-  //   description: "Enable Tool Breakage output by default.",
-  //   group: "preferences",
-  //   type: "boolean",
-  //   value: true,
-  //   scope: "post"
-  // },
   UseToolBreakage: {
     title: "Enable Tool Breakage output",
     description: "Enable Tool Breakage output by default.",
@@ -239,14 +215,6 @@ properties = {
     value: false,
     scope: "post"
   },
-  useG54x4: {
-    title: "Use G54.4",
-    description: "Fanuc 30i supports G54.4 for workpiece error compensation.",
-    group: "probing",
-    type: "boolean",
-    value: false,
-    scope: "post"
-  },
   reverseAAxis: {
     title: "Reverse A-axis",
     description: "Makes the A-axis rotate the opposite way.",
@@ -300,7 +268,7 @@ properties = {
   }
 };
 
-// wcs definiton
+// wcs definition
 wcsDefinitions = {
   useZeroOffset: true,
   wcs: [
@@ -309,10 +277,6 @@ wcsDefinitions = {
 };
 
 var singleLineCoolant = false; // specifies to output multiple coolant codes in one line rather than in separate lines
-// samples:
-// {id: COOLANT_THROUGH_TOOL, on: 7, off: 9}
-// {id: COOLANT_THROUGH_TOOL, on: [7], off: [9]}
-// {id: COOLANT_THROUGH_TOOL, on: "M07 P3 (myComment)", off: "M09"}
 var coolants = [
   { id: COOLANT_FLOOD, on: 8 },
   { id: COOLANT_MIST },
@@ -520,31 +484,9 @@ function onOpen() {
 
   if (programName) {
     var programId;
-    //try {
-     // programId = getAsInt(programName);
-   // } catch (e) {
-     // error(localize("Program name must be a number."));
-     // return;
-  //  }
-    // if (getProperty("o8")) {
-    //   if (!((programId >= 1) && (programId <= 99999999))) {
-    //     error(localize("Program number is out of range."));
-    //     return;
-    //   }
-    // } else {
-    //   if (!((programId >= 1) && (programId <= 9999))) {
-    //     error(localize("Program number is out of range."));
-    //     return;
-    //   }
-    // }
-    // if ((programId >= 8000) && (programId <= 9999)) {
-    //   warning(localize("Program number is reserved by tool builder."));
-    // }
-    oFormat = createFormat({ width: (getProperty("o8") ? 8 : 4), zeropad: true, decimals: 0 });
     if (programComment) {
-      writeln("O" + oFormat.format(programId) + " (" + filterText(String(programComment).toUpperCase(), permittedCommentChars) + ")");
+      writeln(" (" + filterText(String(programComment).toUpperCase(), permittedCommentChars) + ")");
     } else {
-      //writeln("O" + oFormat.format(programId));
       writeBlock(": (PGM, NAME=\"" + programName + "\")");
     }
     lastSubprogram = programId;
@@ -1331,9 +1273,6 @@ function onSection() {
       setSmoothing(false);
     }
   }
-  if (getProperty("UseSuction")) {
-    writeBlock(mFormat.format(132));
-  }
 
   if (hasParameter("operation-comment")) {
     var comment = getParameter("operation-comment");
@@ -1530,8 +1469,6 @@ function onSection() {
   validate(lengthCompensationActive, "Length compensation is not active.");
 
   if (isProbeOperation()) {
-    // validate(probeVariables.probeAngleMethod != "G68", "You cannot probe while G68 Rotation is in effect.");
-    // validate(probeVariables.probeAngleMethod != "G54.4", "You cannot probe while workpiece setting error compensation G54.4 is enabled.");
     inspectionCreateResultsFileHeader();
   }
 
@@ -1593,7 +1530,7 @@ function approach(value) {
 }
 
 function setProbeAngleMethod() {
-  probeVariables.probeAngleMethod = (machineConfiguration.getNumberOfAxes() < 5 || is3D()) ? (getProperty("useG54x4") ? "G54.4" : "G68") : "UNSUPPORTED";
+  probeVariables.probeAngleMethod = (machineConfiguration.getNumberOfAxes() < 5 || is3D()) ? "G68" : "UNSUPPORTED";
   var axes = [machineConfiguration.getAxisU(), machineConfiguration.getAxisV(), machineConfiguration.getAxisW()];
   for (var i = 0; i < axes.length; ++i) {
     if (axes[i].isEnabled() && isSameDirection((axes[i].getAxis()).getAbsolute(), new Vector(0, 0, 1)) && axes[i].isTable()) {
@@ -3106,7 +3043,6 @@ function onClose() {
 
   setCoolant(COOLANT_OFF);
   onCommand(COMMAND_STOP_SPINDLE);
-  //writeRetract(Z);
 
   //disableLengthCompensation(true);
   setSmoothing(false);
@@ -3118,9 +3054,7 @@ function onClose() {
     writeBlock(gFormat.format(54.4), "P0");
   }
   //writeRetract(X, Y);
-  if (getProperty("UseSuction")) {
-    writeBlock(mFormat.format(133));
-  }
+
   onImpliedCommand(COMMAND_END);
   onImpliedCommand(COMMAND_STOP_SPINDLE);
   writeBlock(mFormat.format(83)); // Part Counter,
