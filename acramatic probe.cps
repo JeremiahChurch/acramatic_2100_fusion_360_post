@@ -46,7 +46,7 @@ minimumCircularSweep = toRad(0.01);
 maximumCircularSweep = toRad(180);
 allowHelicalMoves = true;
 allowedCircularPlanes = undefined; // allow any circular motion
-probeFeedrate = (unit == IN) ? 100 : 2540;
+probeFeedrate = (unit === IN) ? 100 : 2540;
 
 // user-defined properties
 properties = {
@@ -300,11 +300,11 @@ var hFormat = createFormat({ prefix: "H", decimals: 0});
 var dFormat = createFormat({ prefix: "D", width: 2, zeropad: true, decimals: 1 });
 var probeWCSFormat = createFormat({ decimals: 0, forceDecimal: true });
 
-var xyzFormat = createFormat({ decimals: (unit == MM ? 3 : 4), forceDecimal: true });
+var xyzFormat = createFormat({ decimals: (unit === MM ? 3 : 4), forceDecimal: true });
 var rFormat = xyzFormat; // radius
 var abcFormat = createFormat({ decimals: 3, forceDecimal: true, scale: DEG });
-var feedFormat = createFormat({ decimals: (unit == MM ? 1 : 2), forceDecimal: true });
-var pitchFormat = createFormat({ decimals: (unit == MM ? 3 : 4), forceDecimal: true });
+var feedFormat = createFormat({ decimals: (unit === MM ? 1 : 2), forceDecimal: true });
+var pitchFormat = createFormat({ decimals: (unit === MM ? 3 : 4), forceDecimal: true });
 var toolFormat = createFormat({ decimals: 0 });
 var rpmFormat = createFormat({ decimals: 0 });
 var secFormat = createFormat({ decimals: 3, forceDecimal: true }); // seconds - range 0.001-99999.999
@@ -2091,7 +2091,7 @@ function onCyclePoint(x, y, z) {
           conditional(cornerI != 0, "I" + xyzFormat.format(cornerI)),
           conditional(cornerJ != 0, "J" + xyzFormat.format(cornerJ)),
           "I" + xyzFormat.format(x),
-          "J" + xyzFormat.format(y)
+          "J" + xyzFormat.format(y),
           "D" + xyzFormat.format(cycle.probeOvertravel),
          // getProbingArguments(cycle, true)
         );
