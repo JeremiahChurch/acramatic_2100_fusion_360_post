@@ -21,9 +21,8 @@
 // REV09 -08/01/2024  ; tapping fixes
 // REV10 -08/05/2024  ; support multiple WCS
 // REV11 -08/05/2024  ; chip breaking for tapping
-// REV12 -08/06/2024  ; fix probing math
 //---------------------------------------------------------------------------//
-description = "Acramatic Probe V12";
+description = "Acramatic Probe V11";
 vendor = "Vickers";
 vendorUrl = "https://github.com/JeremiahChurch/acramatic_2100_fusion_360_post";
 legal = "Copyright (C) 2012-2022 by Autodesk, Inc.";
@@ -317,7 +316,7 @@ var singleLineCoolant = false; // specifies to output multiple coolant codes in 
 var coolants = [
   { id: COOLANT_FLOOD, on: 8 },
   { id: COOLANT_MIST },
-  { id: COOLANT_THROUGH_TOOL, on:27 },
+  { id: COOLANT_THROUGH_TOOL, on: 27 },
   { id: COOLANT_AIR },
   { id: COOLANT_AIR_THROUGH_TOOL },
   { id: COOLANT_SUCTION },
@@ -328,7 +327,7 @@ var coolants = [
 
 
 
-var permittedCommentChars = " ABCDEFGHIJKLMNOPQRSTUVWZYZ0123456789.,=_-";
+var permittedCommentChars = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,=_-";
 
 var gFormat = createFormat({ prefix: "G", width: 2, zeropad: true, decimals: 1 });
 var mFormat = createFormat({ prefix: "M", width: 2, zeropad: true, decimals: 1 });
