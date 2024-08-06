@@ -303,7 +303,7 @@ properties = {
 // wcs definiton
 wcsDefinitions = {
   useZeroOffset: true,
-  wcs          : [
+  wcs: [
     { name: "Standard", format: "H", range: [1, 32] }
   ]
 };
