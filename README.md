@@ -10,6 +10,7 @@ TODO:
 - [ ] G51 vector probe for WCS [G51 doesn't set coordinates](https://www.cnczone.com/forums/cincinnati-cnc/471344-use-g51-vector-probe-update-offsets.html) (release 2 limit/bug?)
 - [ ] improve tool probing to use correct P word for tool type automatically
 - [ ] remove hardcode rigid tapping and use post processor option to support both tap types
+- [ ] add support for tool wear updates via probing
 
 ## Resources / References
 
